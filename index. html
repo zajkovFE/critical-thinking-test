@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Тест критического мышления</title>
+<script src="https://cdn.jsdelivr.net/npm/jspsych@7.3.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jspsych/plugin-html-button-response@1.1.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jspsych/plugin-survey-text@1.1.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jspsych/plugin-survey-multi-choice@1.1.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jspsych/plugin-instructions@1.1.3"></script>
+<link href="https://cdn.jsdelivr.net/npm/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
+<style>
+  .jspsych-content { max-width: 800px; }
+  .block-label { color:#888; font-size:14px; margin-bottom:8px; }
+</style>
+</head>
+<body></body>
+<script>
+
+const jsPsych = initJsPsych({
+  on_finish: function () {
+    jsPsych.data.get().localSave('csv', 'critical_thinking_results.csv');
+  }
+});
+
+const timeline = [];
+
+timeline.push({
+  type: jsPsychInstructions,
+  pages: [
+    "<h3>Тест критического мышления</h3>" +
+    "<p>Вам будет предложено несколько блоков заданий разного типа. " +
+    "Отвечайте как можно точнее — время вашего ответа тоже фиксируется, " +
+    "но не старайтесь специально спешить или медлить, отвечайте в своём обычном темпе.</p>",
+  ],
+  show_clickable_nav: true,
+  button_label_next: "Далее",
+});
+
+const participantID = jsPsych.randomization.randomID(15);
+jsPsych.data.addProperties({ participant_id: participantID });
+
+timeline.push({
+  type: jsPsychSurveyMultiChoice,
+  questions: [{
+    prompt: "Укажите вуз / базу, где вы проходите тест:",
+    name: "university",
+    options: ["КГМА", "КРСУ", "КГТУ", "РЦПН", "Другое"],
+    required: true,
+  }],
+});
+
+timeline.push({
+  type: jsPsychSurveyText,
+  questions: [{ prompt: "Укажите вуз/базу вручную:", name: "university_other", required: true }],
+  conditional_function: function () {
+    const lastData = jsPsych.data.get().last(1).values()[0];
+    return lastData.response && lastData.response.university === "Другое";
+  },
+});
+
+function makeItem(block, item_id, stimulus, choices, correct_index) {
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '<div class="block-label">' + blockLabel(block) + ' · ' + item_id + '</div>' + stimulus,
+    choices: choices,
+    data: { block: block, item_id: item_id, correct_index: correct_index },
+    on_finish: function (data) {
+      data.correct = (data.response === correct_index);
+    },
+  };
+}
+
+function blockLabel(block) {
+  const labels = {
+    deduction: 'Дедукция',
+    induction: 'Индукция',
+    interpretation: 'Интерпретация',
+    argumentation: 'Аргументация',
+  };
+  return labels[block] || block;
+}
+
+function blockIntro(title, text) {
+  return {
+    type: jsPsychInstructions,
+    pages: ['<h3>' + title + '</h3><p>' + text + '</p>'],
+    show_clickable_nav: true,
+    button_label_next: "Начать блок",
+  };
+}
+
+timeline.push(blockIntro(
+  "Блок 1. Дедукция",
+  "В этом блоке нужно оценить, следует ли вывод логически из посылок."
+));
+
+timeline.push(makeItem(
+  "deduction", "D1",
+  "<p><b>Посылки:</b> Все врачи изучают анатомию. Иван — врач.<br>" +
+  "<b>Вывод:</b> Иван изучал анатомию.</p><p>Следует ли вывод логически из посылок?</p>",
+  ["Да, следует", "Нет, не следует", "Недостаточно данных"],
+  0
+));
+
+timeline.push(makeItem(
+  "deduction", "D2",
+  "<p><i>[ЗАГЛУШКА — замените на реальный пункт вашего банка заданий]</i></p>",
+  ["Вариант 1", "Вариант 2", "Вариант 3"],
+  0
+));
+
+timeline.push(blockIntro(
+  "Блок 2. Индукция",
+  "Оцените, насколько обоснованно обобщение на основе приведённых наблюдений."
+));
+
+timeline.push(makeItem(
+  "induction", "I1",
+  "<p><i>[ЗАГЛУШКА — пример: серия наблюдений + предлагаемое обобщение]</i></p>",
+  ["Обобщение обосновано", "Обобщение не обосновано", "Данных недостаточно"],
+  1
+));
+
+timeline.push(blockIntro(
+  "Блок 3. Интерпретация",
+  "Определите, подтверждается ли предложенная интерпретация приведённым текстом или данными."
+));
+
+timeline.push(makeItem(
+  "interpretation", "N1",
+  "<p><i>[ЗАГЛУШКА — короткий текст/график + предлагаемая интерпретация]</i></p>",
+  ["Подтверждается", "Не подтверждается", "Частично подтверждается"],
+  0
+));
+
+timeline.push(blockIntro(
+  "Блок 4. Аргументация",
+  "Оцените, насколько приведённый аргумент силён по отношению к обсуждаемому вопросу."
+));
+
+timeline.push(makeItem(
+  "argumentation", "A1",
+  "<p><i>[ЗАГЛУШКА — вопрос + аргумент за/против]</i></p>",
+  ["Сильный аргумент", "Слабый аргумент"],
+  0
+));
+
+timeline.push({
+  type: jsPsychInstructions,
+  pages: [
+    function () {
+      return "<h3>Тест завершён</h3>" +
+        "<p>Спасибо за участие. Результаты сохраняются автоматически.</p>" +
+        "<p>Ваш идентификатор участника (сохраните, если захотите " +
+        "отозвать согласие на использование данных):</p>" +
+        "<p style='font-size:20px; font-weight:bold; letter-spacing:1px;'>" +
+        participantID + "</p>";
+    },
+  ],
+  show_clickable_nav: true,
+  button_label_next: "Завершить и скачать данные",
+});
+
+jsPsych.run(timeline);
+
+</script>
+</html>
