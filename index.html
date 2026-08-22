@@ -4,16 +4,15 @@
 <meta charset="UTF-8">
 <title>Тест критического мышления</title>
 
-<!-- 1. ИСПРАВЛЕНО: Официальные браузерные сборки jsPsych через unpkg -->
 <script src="https://unpkg.com/jspsych@7.3.4"></script>
 <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.3"></script>
 <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.3"></script>
 <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.3"></script>
 <script src="https://unpkg.com/@jspsych/plugin-instructions@1.1.3"></script>
+<script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
 <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
 
 <style>
-  /* 2. ДОБАВЛЕНО: Ваши предпочтения по шрифту и читаемости */
   body {
     font-family: 'Times New Roman', Times, serif;
     font-size: 20px;
@@ -34,12 +33,7 @@
 <body></body>
 <script>
 
-const jsPsych = initJsPsych({
-  on_finish: function () {
-    // Автоматическое скачивание CSV по завершении
-    jsPsych.data.get().localSave('csv', 'critical_thinking_results.csv');
-  }
-});
+const jsPsych = initJsPsych();
 
 const timeline = [];
 
@@ -75,7 +69,6 @@ timeline.push({
     name: "university_other", 
     required: true 
   }],
-  // 3. УЛУЧШЕНО: Добавлена проверка на существование данных, чтобы избежать ошибок при переходе
   conditional_function: function () {
     const lastData = jsPsych.data.get().last(1).values()[0];
     return lastData && lastData.response && lastData.response.university === "Другое";
@@ -113,7 +106,6 @@ function blockIntro(title, text) {
   };
 }
 
-// --- БЛОК 1: Дедукция ---
 timeline.push(blockIntro("Блок 1. Дедукция", "В этом блоке нужно оценить, следует ли вывод логически из посылок."));
 
 timeline.push(makeItem(
@@ -131,7 +123,6 @@ timeline.push(makeItem(
   0
 ));
 
-// --- БЛОК 2: Индукция ---
 timeline.push(blockIntro("Блок 2. Индукция", "Оцените, насколько обоснованно обобщение на основе приведённых наблюдений."));
 
 timeline.push(makeItem(
@@ -141,7 +132,6 @@ timeline.push(makeItem(
   1
 ));
 
-// --- БЛОК 3: Интерпретация ---
 timeline.push(blockIntro("Блок 3. Интерпретация", "Определите, подтверждается ли предложенная интерпретация приведённым текстом или данными."));
 
 timeline.push(makeItem(
@@ -151,7 +141,6 @@ timeline.push(makeItem(
   0
 ));
 
-// --- БЛОК 4: Аргументация ---
 timeline.push(blockIntro("Блок 4. Аргументация", "Оцените, насколько приведённый аргумент силён по отношению к обсуждаемому вопросу."));
 
 timeline.push(makeItem(
@@ -161,13 +150,22 @@ timeline.push(makeItem(
   0
 ));
 
+// --- ОТПРАВКА ДАННЫХ НА DATAPIPE → OSF (невидимо для участника) ---
+timeline.push({
+  type: jsPsychPipe,
+  action: "save",
+  experiment_id: "NUuDiPtIw9j6",
+  filename: `${participantID}.csv`,
+  data_string: () => jsPsych.data.get().csv(),
+});
+
 // --- ЗАВЕРШЕНИЕ ---
 timeline.push({
   type: jsPsychInstructions,
   pages: [
     function () {
       return "<h3>Тест завершён</h3>" +
-        "<p>Спасибо за участие. Результаты сохраняются автоматически.</p>" +
+        "<p>Спасибо за участие. Результаты сохранены автоматически.</p>" +
         "<p>Ваш идентификатор участника (сохраните его, если захотите " +
         "отозвать согласие на использование данных):</p>" +
         "<p style='font-size:24px; font-weight:bold; letter-spacing:1px; color:#2c3e50;'>" +
@@ -175,7 +173,7 @@ timeline.push({
     },
   ],
   show_clickable_nav: true,
-  button_label_next: "Завершить и скачать данные",
+  button_label_next: "Завершить",
 });
 
 jsPsych.run(timeline);
