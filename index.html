@@ -156,8 +156,10 @@ timeline.push({
 });
 
 timeline.push({
-  type: jsPsychSurveyText,
-  questions: [{ prompt: "Укажите вуз/базу вручную:", name: "university_other", required: true }],
+  timeline: [{
+    type: jsPsychSurveyText,
+    questions: [{ prompt: "Укажите вуз/базу вручную:", name: "university_other", required: true }],
+  }],
   conditional_function: function () {
     return selectedUniversity === "Другое";
   },
@@ -187,10 +189,10 @@ timeline.push({
 });
 
 timeline.push({
-  type: jsPsychSurveyText,
-  questions: [
-    { prompt: "Если вы студент, то какого курса?", name: "course", required: true }
-  ],
+  timeline: [{
+    type: jsPsychSurveyText,
+    questions: [{ prompt: "Если вы студент, то какого курса?", name: "course", required: true }],
+  }],
   conditional_function: function() {
     return isStudent === "Да";
   }
@@ -216,23 +218,25 @@ timeline.push({
 });
 
 timeline.push({
-  type: jsPsychSurveyMultiSelect,
-  questions: [
-    { 
+timeline.push({
+  timeline: [{
+    type: jsPsychSurveyMultiSelect,
+    questions: [{ 
       prompt: "Какой языковой моделью (ИИ) вы пользуетесь? (можете выбрать как один, так и несколько)", 
       name: "ai_models", 
       options: ["Chat GPT", "Yandex GPT", "Deep Seek", "Copilot", "Gemini", "Qwen", "Другое"], 
       required: false, 
       horizontal: false 
-    }
-  ],
+    }],
+  }],
   conditional_function: function() {
     return usesAI === "Да";
   }
 });
 
 // ==========================================
-// 4. КОПИНГ-СТРАТЕГИИ (25 пунктов)
+// ==========================================
+// 4. КОПИНГ-СТРАТЕГИИ (25 пунктов, по одному на экран)
 // ==========================================
 const copingItems = [
   "Когда я сталкиваюсь с трудностями, я стараюсь понять, что именно произошло и почему.",
@@ -264,16 +268,19 @@ const copingItems = [
 
 const likertLabels = ["Совсем не так", "Немного так", "В некоторой степени так", "Довольно часто так", "Почти всегда так"];
 
-const copingQuestions = copingItems.map((item, index) => ({
-  prompt: `${index + 1}. ${item}`,
-  name: `coping_${index + 1}`,
-  labels: likertLabels
-}));
-
 timeline.push({
-  type: jsPsychSurveyLikert,
-  questions: copingQuestions,
-  preamble: "<p><b>Инструкция:</b> Этот опрос поможет понять, каким образом вы обычно справляетесь со стрессовыми ситуациями. Мы не оцениваем правильность или ошибочность ваших ответов — каждый человек уникален. Пожалуйста, прочтите каждое утверждение и отметьте, насколько часто или характерно для вас такое поведение в стрессовой ситуации. Отвечайте честно — так, как вы поступаете на самом деле.</p>"
+  type: jsPsychInstructions,
+  pages: ["<p><b>Инструкция:</b> Этот опрос поможет понять, каким образом вы обычно справляетесь со стрессовыми ситуациями. Мы не оцениваем правильность или ошибочность ваших ответов — каждый человек уникален. Пожалуйста, прочтите каждое утверждение и отметьте, насколько часто или характерно для вас такое поведение в стрессовой ситуации. Отвечайте честно — так, как вы поступаете на самом деле.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать"
+});
+
+copingItems.forEach((item, index) => {
+  timeline.push({
+    type: jsPsychSurveyLikert,
+    questions: [{ prompt: item, name: `coping_${index + 1}`, labels: likertLabels }],
+    data: { block: "coping", item_id: index + 1 },
+  });
 });
 
 // ==========================================
