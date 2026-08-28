@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
 <title>Исследование: Критическое мышление и копинг-стратегии</title>
 
 <script src="https://unpkg.com/jspsych@7.3.4"></script>
@@ -25,15 +26,13 @@
     margin: 0;
     padding: 20px 10px;
   }
-
   h3 {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     color: #3c3c3c;
   }
-
   .jspsych-content {
-    max-width: 700px;
+    max-width: 1050px;
     margin: 0 auto;
     background: #ffffff;
     border-radius: 12px;
@@ -41,7 +40,6 @@
     box-shadow: 0 1px 3px rgba(60,64,67,0.15), 0 1px 2px rgba(60,64,67,0.1);
     border-top: 6px solid #5746e3;
   }
-
   .jspsych-survey-multi-choice-question,
   .jspsych-survey-likert-question,
   .jspsych-survey-multi-select-question {
@@ -49,7 +47,6 @@
     padding-bottom: 14px;
     border-bottom: 1px solid #eee;
   }
-
   .block-label {
     color: #5746e3;
     font-size: 14px;
@@ -58,6 +55,125 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
+  .part-label {
+    display: inline-block;
+    background: #eeedfc;
+    color: #5746e3;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .crisis-box {
+    background: #fff4f4;
+    border: 1px solid #f0c0c0;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 16px 0;
+    text-align: left;
+  }
+
+  /* Кастомный прогресс: 4 части + вертикальные границы */
+  #study-progress {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 2147483647 !important;
+    height: 64px;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    padding: 7px 14px 8px;
+    box-sizing: border-box;
+  }
+  #study-progress-inner { width: min(1100px, 100%); margin: 0 auto; }
+  #study-progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  #study-progress-percent { font-weight: 700; color: #5746e3; }
+  #study-progress-track {
+    position: relative;
+    height: 8px;
+    background: #ececf3;
+    border-radius: 8px;
+    overflow: visible;
+    transition: background 0.3s ease;
+  }
+  #study-progress-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: #5746e3;
+    border-radius: 8px;
+    transition: width 0.25s ease;
+  }
+  .study-progress-marker {
+    position: absolute;
+    top: -4px;
+    height: 16px;
+    width: 2px;
+    background: #8c8c98;
+    z-index: 3;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  .study-progress-marker:nth-child(2) { left: 25%; }
+  .study-progress-marker:nth-child(3) { left: 50%; }
+  .study-progress-marker:nth-child(4) { left: 75%; }
+  .study-progress-labels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 4px;
+    font-size: 10px;
+    color: #777;
+  }
+  .study-progress-labels span { text-align: center; }
+  body { padding-top: 82px !important; }
+  @media (min-width: 481px) {
+    #study-progress { min-height: 64px; }
+    #study-progress-inner { width: min(1100px, calc(100% - 40px)); }
+    .study-progress-labels { font-size: 11px; }
+  }
+
+  .crisis-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(30,30,40,0.48);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    box-sizing: border-box;
+  }
+  .crisis-modal {
+    max-width: 620px;
+    width: 100%;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    padding: 22px 24px;
+    box-sizing: border-box;
+    text-align: left;
+    border-top: 6px solid #c0392b;
+  }
+  .crisis-modal h3 { margin-top: 0; color: #8e2f25; }
+  .crisis-modal .crisis-number { font-size: 18px; font-weight: 700; margin: 12px 0; }
 
   .jspsych-btn {
     font-family: 'Roboto', sans-serif;
@@ -74,7 +190,6 @@
     background: #eeedfc;
     border-color: #5746e3;
   }
-
   #jspsych-instructions-next,
   #jspsych-survey-multi-choice-next,
   #jspsych-survey-text-next,
@@ -95,51 +210,351 @@
   #jspsych-survey-likert-next:hover {
     background: #4636c9 !important;
   }
-
   input[type="radio"], input[type="checkbox"] {
     accent-color: #5746e3;
     width: 18px;
     height: 18px;
   }
-
-  /* адаптив под телефон */
   @media (max-width: 480px) {
     body { font-size: 15px; padding: 10px 4px; }
     .jspsych-content { padding: 16px 14px; border-radius: 10px; }
     .block-label { font-size: 12px; }
     .jspsych-btn { font-size: 14px; padding: 9px 12px; display: block; width: 100%; box-sizing: border-box; margin: 4px 0; }
-    /* таблица Лайкерта на телефоне тесная — уменьшаем шрифт вариантов */
     .jspsych-survey-likert-opts { font-size: 12px; }
+  }
+  /* Круговая анимация отправки данных на DataPipe */
+  #datapipe-loader-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: rgba(240,235,248,0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #datapipe-loader-ring {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#5746e3 0deg, #ececf3 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s linear;
+  }
+  #datapipe-loader-ring::before {
+    content: "";
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #f0ebf8;
+    position: absolute;
+  }
+  #datapipe-loader-percent {
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: #3c3c3c;
+  }
+  #datapipe-loader-text {
+    margin-top: 18px;
+    font-family: 'Roboto', sans-serif;
+    color: #555;
+    font-size: 15px;
   }
 </style>
 </head>
-<body></body>
+<body>
+<div id="jspsych-target"></div>
+</body>
 <script>
 
-const jsPsych = initJsPsych();
+window.addEventListener("beforeunload", function (e) {
+  e.preventDefault();
+  e.returnValue = "";
+});
+
+const studyProgress = {
+  currentPart: 0,
+  percent: 0,
+  completed: false
+};
+
+function updateStudyProgress(part, percentWithinPart = 0) {
+  if (studyProgress.completed) return;
+  const safePart = Math.max(1, Math.min(4, part || 1));
+  const within = Math.max(0, Math.min(100, percentWithinPart || 0));
+  const overall = Math.min(100, ((safePart - 1) * 25) + (within * 0.25));
+  studyProgress.currentPart = safePart;
+  studyProgress.percent = overall;
+
+  const fill = document.getElementById("study-progress-fill");
+  const pct = document.getElementById("study-progress-percent");
+  const partLabel = document.getElementById("study-progress-part");
+  const track = document.getElementById("study-progress-track");
+  if (fill) fill.style.width = overall.toFixed(1) + "%";
+  if (pct) pct.textContent = Math.round(overall) + "%";
+  if (partLabel) partLabel.textContent = "Часть " + safePart + " из 4";
+  if (track) {
+    track.setAttribute("role", "progressbar");
+    track.setAttribute("aria-valuemin", "0");
+    track.setAttribute("aria-valuemax", "100");
+    track.setAttribute("aria-valuenow", Math.round(overall));
+  }
+  document.querySelectorAll(".study-progress-marker").forEach((marker, i) => {
+    marker.style.opacity = "1";
+    const markerThreshold = (i + 1) * 25;
+    marker.style.transform = overall >= markerThreshold ? "scale(1.3)" : "scale(1)";
+  });
+}
+
+const progressHTML = `
+  <div id="study-progress" aria-label="Прогресс исследования">
+    <div id="study-progress-inner">
+      <div id="study-progress-top">
+        <span id="study-progress-part">Часть 1 из 4</span>
+        <span id="study-progress-percent">0%</span>
+      </div>
+      <div id="study-progress-track">
+        <div id="study-progress-fill"></div>
+        <span class="study-progress-marker"></span>
+        <span class="study-progress-marker"></span>
+        <span class="study-progress-marker"></span>
+      </div>
+      <div class="study-progress-labels">
+        <span>Общие вопросы</span>
+        <span>Тревога + депрессия</span>
+        <span>Копинг</span>
+        <span>КМ</span>
+      </div>
+    </div>
+  </div>`;
+const progressNode = document.createElement("div");
+progressNode.innerHTML = progressHTML;
+document.body.appendChild(progressNode.firstElementChild);
+
+const blockTiming = {};
+const partTiming = {};
+const partQuestionCounts = {1: 0, 2: 0, 3: 0, 4: 0};
+const partExpectedQuestions = {1: 14, 2: 16, 3: 26, 4: 26};
+let lastTrialStart = null;
+let excludedTimingMs = 0; // примеры/обучающие экраны, которые не входят в аналитическое время
+const partExcludedMs = { 1: 0, 2: 0, 3: 0, 4: 0 }; // то же самое, но по каждой части отдельно
+
+function timingBlockFor(data) {
+  if (!data) return null;
+  if (data.block === "phq9") return "PHQ-9";
+  if (data.block === "gad7") return "GAD-7";
+  if (data.block === "coping") return "Копинг";
+  if (data.block === "attention_check") return "Копинг";
+  if (data.block === "training") return "КМ · пример";
+  if (data.block === "Умение делать выводы") return "КМ · Выводы";
+  if (data.block === "Выявление предпосылок") return "КМ · Предпосылки";
+  if (data.block === "Дедукция") return "КМ · Дедукция";
+  if (data.block === "Интерпретация") return "КМ · Интерпретация";
+  if (data.block === "Оценка аргументов") return "КМ · Аргументы";
+  if (data.block === "university" || data.block === "demographics" ||
+      data.block === "student_course" || data.block === "student_gpa" ||
+      data.block === "ai") return "Общие вопросы";
+  return null;
+}
+
+function partForBlock(block) {
+  if (!block) return null;
+  if (block === "PHQ-9" || block === "GAD-7") return 2;
+  if (block === "Копинг") return 3;
+  if (block.indexOf("КМ") === 0) return 4;
+  if (block === "Общие вопросы") return 1;
+  return null;
+}
+
+function beginTiming(data) {
+  lastTrialStart = performance.now();
+  const block = timingBlockFor(data);
+  const part = partForBlock(block);
+  if (block && !blockTiming[block]) blockTiming[block] = { start: lastTrialStart, end: null, duration: 0 };
+  if (part && !partTiming[part]) partTiming[part] = { start: lastTrialStart, end: null, duration: 0 };
+}
+
+function finishTiming(data) {
+  const now = performance.now();
+  const duration = lastTrialStart == null ? null : Math.max(0, now - lastTrialStart);
+  if (duration != null) data.trial_duration_ms = Math.round(duration);
+
+  const block = timingBlockFor(data);
+  const part = partForBlock(block);
+
+  if (duration != null && (data.block === "training" || data.timing_exclude === true)) {
+    excludedTimingMs += duration;
+    data.timing_excluded = true;
+    if (part) partExcludedMs[part] += duration;
+  }
+
+  if (block) {
+    if (!blockTiming[block]) blockTiming[block] = { start: now - (duration || 0), end: now, duration: 0 };
+    blockTiming[block].end = now;
+    blockTiming[block].duration = blockTiming[block].end - blockTiming[block].start;
+  }
+  if (part) {
+    if (!partTiming[part]) partTiming[part] = { start: now - (duration || 0), end: now, duration: 0 };
+    partTiming[part].end = now;
+    partTiming[part].duration = partTiming[part].end - partTiming[part].start;
+
+    if (block) {
+      partQuestionCounts[part] += 1;
+      const within = Math.min(100, (partQuestionCounts[part] / partExpectedQuestions[part]) * 100);
+      updateStudyProgress(part, within);
+    }
+  }
+}
+
+function startPartTiming(part) {
+  const now = performance.now();
+  if (part > 1 && partTiming[part - 1] && !partTiming[part - 1].end) {
+    partTiming[part - 1].end = now;
+    partTiming[part - 1].duration = now - partTiming[part - 1].start;
+  }
+  if (!partTiming[part]) partTiming[part] = { start: now, end: null, duration: 0 };
+}
+
+function closePartTiming(part) {
+  const now = performance.now();
+  if (partTiming[part]) {
+    partTiming[part].end = now;
+    partTiming[part].duration = now - partTiming[part].start;
+  }
+}
+
+function minutes2(ms) {
+  return ms == null ? "" : Math.round(ms / 60000 * 100) / 100;
+}
+
+function calculatePsychometricScores() {
+  const phqRows = jsPsych.data.get().filter({block: "phq9"}).values();
+  const gadRows = jsPsych.data.get().filter({block: "gad7"}).values();
+
+  // jsPsych SurveyLikert stores response as an object, e.g.
+  // { phq9_1: 2 }, not as a bare number.
+  const rowValue = (row, prefix) => {
+    if (!row || row.response == null) return 0;
+    if (typeof row.response === "object") {
+      const key = prefix + "_" + row.item_id;
+      const v = Number(row.response[key]);
+      return Number.isFinite(v) ? v : 0;
+    }
+    const v = Number(row.response);
+    return Number.isFinite(v) ? v : 0;
+  };
+
+  const sumResponses = (rows, prefix) => rows.reduce((sum, row) => sum + rowValue(row, prefix), 0);
+
+  const phq9Score = sumResponses(phqRows, "phq9");
+  const gad7Score = sumResponses(gadRows, "gad7");
+  const suicidalRow = phqRows.find(row => Number(row.item_id) === 9);
+  const suicidalThoughts = suicidalRow ? rowValue(suicidalRow, "phq9") > 0 : false;
+
+  const phqSeverity =
+    phq9Score <= 4 ? "минимальные" :
+    phq9Score <= 9 ? "лёгкие" :
+    phq9Score <= 14 ? "умеренные" :
+    phq9Score <= 19 ? "умеренно тяжёлые" : "тяжёлые";
+
+  const gadSeverity =
+    gad7Score <= 4 ? "минимальная" :
+    gad7Score <= 9 ? "лёгкая" :
+    gad7Score <= 14 ? "умеренная" : "тяжёлая";
+
+  return {
+    phq9_score: phq9Score,
+    phq9_severity: phqSeverity,
+    gad7_score: gad7Score,
+    gad7_severity: gadSeverity,
+    suicidal_thoughts_flag: suicidalThoughts,
+    high_depression_flag: phq9Score >= 10,
+    high_anxiety_flag: gad7Score >= 10,
+    safety_screen_triggered: suicidalThoughts || phq9Score >= 10
+  };
+}
+
+function timingSummaryProperties() {
+  const totalMs = performance.now() - startTime;
+  const measuredMs = Math.max(0, totalMs - excludedTimingMs);
+  return {
+    total_elapsed_ms: Math.round(totalMs),
+    total_elapsed_min: minutes2(totalMs),
+    total_duration_ms: Math.round(measuredMs),
+    total_duration_min: minutes2(measuredMs),
+    part1_duration_min: minutes2(Math.max(0, (partTiming[1]?.duration || 0) - partExcludedMs[1])),
+    part2_duration_min: minutes2(Math.max(0, (partTiming[2]?.duration || 0) - partExcludedMs[2])),
+    part3_duration_min: minutes2(Math.max(0, (partTiming[3]?.duration || 0) - partExcludedMs[3])),
+    part4_duration_min: minutes2(Math.max(0, (partTiming[4]?.duration || 0) - partExcludedMs[4])),
+    phq9_duration_min: minutes2(blockTiming["PHQ-9"]?.duration),
+    gad7_duration_min: minutes2(blockTiming["GAD-7"]?.duration),
+    coping_duration_min: minutes2(blockTiming["Копинг"]?.duration),
+    ct_inference_duration_min: minutes2(blockTiming["КМ · Выводы"]?.duration),
+    ct_assumptions_duration_min: minutes2(blockTiming["КМ · Предпосылки"]?.duration),
+    ct_deduction_duration_min: minutes2(blockTiming["КМ · Дедукция"]?.duration),
+    ct_interpretation_duration_min: minutes2(blockTiming["КМ · Интерпретация"]?.duration),
+    ct_arguments_duration_min: minutes2(blockTiming["КМ · Аргументы"]?.duration)
+  };
+}
+
+const jsPsych = initJsPsych({
+  display_element: 'jspsych-target',
+  show_progress_bar: false,
+  on_trial_start: function(data) { beginTiming(data); },
+  on_trial_finish: function(data) { finishTiming(data); }
+});
 
 const timeline = [];
 const participantID = jsPsych.randomization.randomID(15);
+const startTime = performance.now();
 jsPsych.data.addProperties({ participant_id: participantID });
 
 // ==========================================
-// 1. ИНФОРМИРОВАННОЕ СОГЛАСИЕ
+// СОГЛАСИЕ
 // ==========================================
 timeline.push({
   type: jsPsychInstructions,
   pages: [
     "<h3>Уважаемый участник!</h3>" +
     "<p>Перед Вами представлена форма анкеты и диагностический опросник для участия в научном исследовании: <i>«Роль критического мышления как предиктора выраженности проективной идентификации и снижения копинг-стратегий у пациентов с адаптационными расстройствами и у студентов-медиков»</i>.</p>" +
-    "<p>Все Ваши ответы анонимны и будут использоваться только для анализа. Продолжая далее, вы соглашаетесь со всеми условиями.</p>" +
+    "<p>Все Ваши ответы анонимны и будут использоваться только для анализа.</p>" +
     "<p>Ознакомьтесь с текстом информированного согласия по ссылке: <a href='https://docs.google.com/document/d/1yMzP9ZnNErrOwJAGQdB__TWI0Hm5SAV_TiB3-T99A3s/edit?usp=sharing' target='_blank'>Форма согласия</a></p>"
   ],
   show_clickable_nav: true,
-  button_label_next: "Я согласен(на) и хочу продолжить"
+  button_label_next: "Далее"
+});
+
+timeline.push({
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<h3>Согласие на участие</h3>" +
+            "<p>Подтверждаете ли вы своё добровольное согласие на участие в исследовании и обработку анонимных данных?</p>",
+  choices: ["Да, я согласен(на)", "Нет, я не согласен(на)"],
+  on_finish: function(data) {
+    if (data.response === 1) {
+      jsPsych.endExperiment(
+        "<div class='jspsych-content'><h3>Участие прекращено</h3>" +
+        "<p>Спасибо за уделённое время. Ваши данные не были сохранены.</p>" +
+        "<p>Вы можете закрыть вкладку браузера.</p></div>"
+      );
+    }
+  }
 });
 
 // ==========================================
-// 1b. ВУЗ / БАЗА
+// ЧАСТЬ 1. АНКЕТИРОВАНИЕ
 // ==========================================
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Часть 1 из 4</div><h3>Общие вопросы</h3><p>Несколько общих вопросов о вас. Это займёт около минуты.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать",
+  on_load: function() { startPartTiming(1); updateStudyProgress(1, 0); }
+});
+
 let selectedUniversity = "";
 
 timeline.push({
@@ -150,6 +565,7 @@ timeline.push({
     options: ["КГМА", "КРСУ", "КГТУ", "РЦПН", "Другое"],
     required: true,
   }],
+  data: { block: "university" },
   on_finish: function (data) {
     selectedUniversity = data.response.university;
   },
@@ -159,16 +575,29 @@ timeline.push({
   timeline: [{
     type: jsPsychSurveyText,
     questions: [{ prompt: "Укажите вуз/базу вручную:", name: "university_other", required: true }],
+    data: { block: "university" }
   }],
   conditional_function: function () {
     return selectedUniversity === "Другое";
   },
 });
 
-// ==========================================
-// 2. ДЕМОГРАФИЧЕСКИЕ ДАННЫЕ
-// ==========================================
+timeline.push({
+  type: jsPsychSurveyMultiChoice,
+  questions: [{
+    prompt: "Находитесь ли вы на лечении в РЦПН в связи с диагнозом?",
+    name: "patient_status",
+    options: ["Да, у меня установлен диагноз F43.2 (расстройство адаптации)",
+              "Да, но по другому диагнозу",
+              "Нет, я не пациент"],
+    required: true,
+  }],
+  data: { block: "patient_screening" },
+  conditional_function: function() { return selectedUniversity === "РЦПН"; }
+});
+
 let isStudent = "";
+let enteredAge = null;
 
 timeline.push({
   type: jsPsychSurveyMultiChoice,
@@ -181,17 +610,58 @@ timeline.push({
   },
 });
 
+// Возраст с валидацией
 timeline.push({
-  type: jsPsychSurveyText,
-  questions: [
-    { prompt: "Ваш возраст:", name: "age", required: true, type: "number" }
-  ]
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <h3>Демографические данные</h3>
+    <p style="text-align:left;">Ваш возраст:</p>
+    <input type="number" id="age-input" min="14" max="90" aria-required="true" aria-describedby="age-error"
+           style="font-size:18px; padding:8px; width:140px; border-radius:6px; border:1px solid #ccc;">
+    <p id="age-error" role="alert" style="color:#c0392b; display:none;">⚠️ Пожалуйста, укажите корректный возраст (от 14 до 90 лет)</p>`,
+  choices: ["Продолжить"],
+  data: { block: "demographics" },
+  on_load: function() {
+    document.getElementById("age-error").style.display = "none";
+    const btn = document.querySelector("#jspsych-html-button-response-btngroup button");
+    btn.addEventListener("click", function(e) {
+      const input = document.getElementById("age-input");
+      const val = parseInt(input.value);
+      if (isNaN(val) || val < 14 || val > 90) {
+        e.stopImmediatePropagation();
+        document.getElementById("age-error").style.display = "block";
+        return;
+      }
+      // ВАЖНО: сохраняем возраст до того, как jsPsych удалит DOM текущего вопроса.
+      enteredAge = val;
+    }, true);
+  },
+  on_finish: function(data) {
+    data.age = enteredAge;
+  }
 });
 
 timeline.push({
   timeline: [{
     type: jsPsychSurveyText,
     questions: [{ prompt: "Если вы студент, то какого курса?", name: "course", required: true }],
+    data: { block: "student_course" }
+  }],
+  conditional_function: function() {
+    return isStudent === "Да";
+  }
+});
+
+// GPA — только для студентов
+timeline.push({
+  timeline: [{
+    type: jsPsychSurveyText,
+    questions: [{
+      prompt: "Ваш средний балл успеваемости (GPA или его эквивалент, например по 5-балльной шкале):",
+      name: "gpa",
+      required: true
+    }],
+    data: { block: "student_gpa" }
   }],
   conditional_function: function() {
     return isStudent === "Да";
@@ -199,44 +669,253 @@ timeline.push({
 });
 
 // ==========================================
-// 3. ИСПОЛЬЗОВАНИЕ ИИ
+// ЧАСТЬ 2. ВЗАИМОДЕЙСТВИЕ С НЕЙРОСЕТЯМИ
 // ==========================================
-let usesAI = "";
-
 timeline.push({
-  type: jsPsychSurveyMultiChoice,
-  questions: [
-    { prompt: "Используете ли вы ИИ?", name: "uses_ai", options: ["Да", "Нет"], required: true },
-    { prompt: "Доверяете ли вы полученной от ИИ информации?", name: "trust_ai", options: ["Да определенно", "Скорее да, чем нет", "Нет", "Другое"], required: true },
-    { prompt: "Насколько часто вы проверяете информацию, полученную от ИИ?", name: "check_ai", options: ["Всегда", "Иногда", "Я доверяю полученной информации", "Другое"], required: true },
-    { prompt: "Считаете ли вы, что ИИ влияет на вашу успеваемость, ежедневную деятельность и уровень критического мышления?", name: "ai_influence_perf", options: ["Да", "Скорее да, чем нет", "Нет", "Другое"], required: true },
-    { prompt: "Чувствуете ли вы, что использование ИИ повлияло на ваше поведение и память?", name: "ai_influence_behav", options: ["Да", "Нет", "Другое"], required: true }
-  ],
-  on_finish: function (data) {
-    usesAI = data.response.uses_ai;
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Часть 1 из 4</div><h3>Дополнительные вопросы об ИИ</h3><p>Вопросы о вашем опыте использования больших языковых моделей (ИИ-чатов).</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать",
+  on_load: function() { startPartTiming(1); updateStudyProgress(1, 0); }
+});
+
+let usesAI = "";
+let aiOtherNeeded = false;
+const aiOtherFlags = {};
+
+function addSingleChoiceWithOther(prompt, name, options, extra = {}) {
+  timeline.push({
+    type: jsPsychSurveyMultiChoice,
+    questions: [{ prompt, name, options, required: true }],
+    data: { block: "ai" },
+    on_finish: function(data) {
+      if (name === "uses_ai") usesAI = data.response.uses_ai;
+      aiOtherFlags[name] = data.response[name] === "Другое";
+    }
+  });
+
+  timeline.push({
+    timeline: [{
+      type: jsPsychSurveyText,
+      questions: [{
+        prompt: "Укажите, пожалуйста, что именно вы имеете в виду:",
+        name: name + "_other",
+        required: true
+      }],
+      data: { block: "ai" }
+    }],
+    conditional_function: function() {
+      return aiOtherFlags[name] === true;
+    }
+  });
+}
+
+addSingleChoiceWithOther("Используете ли вы ИИ?", "uses_ai", ["Да", "Нет"]);
+addSingleChoiceWithOther("Как часто вы используете ИИ?", "ai_frequency", ["Никогда", "Редко (реже раза в месяц)", "Иногда (несколько раз в месяц)", "Часто (несколько раз в неделю)", "Ежедневно"]);
+addSingleChoiceWithOther("Доверяете ли вы полученной от ИИ информации?", "trust_ai", ["Да определенно", "Скорее да, чем нет", "Нет", "Другое"]);
+addSingleChoiceWithOther("Насколько часто вы проверяете информацию, полученную от ИИ?", "check_ai", ["Всегда", "Иногда", "Я доверяю полученной информации", "Другое"]);
+addSingleChoiceWithOther("Считаете ли вы, что ИИ влияет на вашу успеваемость, ежедневную деятельность и уровень критического мышления?", "ai_influence_perf", ["Да", "Скорее да, чем нет", "Нет", "Другое"]);
+addSingleChoiceWithOther("Чувствуете ли вы, что использование ИИ повлияло на ваше поведение и на принятие решений?", "ai_influence_behav", ["Да", "Нет", "Другое"]);
+
+let aiPurposeOtherNeeded = false;
+timeline.push({
+  type: jsPsychSurveyMultiSelect,
+  questions: [{
+    prompt: "С какой целью вы используете ИИ? (можно выбрать несколько)",
+    name: "ai_purpose",
+    options: ["Техническая поддержка (код, формулы, расчёты)", "Разработка / генерация текста", "Преобразование данных", "Другое"],
+    required: true,
+    horizontal: false
+  }],
+  data: { block: "ai" },
+  on_finish: function(data) {
+    const v = data.response.ai_purpose;
+    aiPurposeOtherNeeded = Array.isArray(v) && v.includes("Другое");
   },
+  conditional_function: function() {
+    return usesAI === "Да";
+  }
 });
 
 timeline.push({
   timeline: [{
-    type: jsPsychSurveyMultiSelect,
-    questions: [{ 
-      prompt: "Какой языковой моделью (ИИ) вы пользуетесь? (можете выбрать как один, так и несколько)", 
-      name: "ai_models", 
-      options: ["Chat GPT", "Yandex GPT", "Deep Seek", "Copilot", "Gemini", "Qwen", "Другое"], 
-      required: false, 
-      horizontal: false 
+    type: jsPsychSurveyText,
+    questions: [{
+      prompt: "Вы выбрали «Другое». Укажите, пожалуйста, дополнительную цель использования ИИ:",
+      name: "ai_purpose_other",
+      required: true
     }],
+    data: { block: "ai" }
+  }],
+  conditional_function: function() {
+    return usesAI === "Да" && aiPurposeOtherNeeded;
+  }
+});
+
+let aiModelsOtherNeeded = false;
+timeline.push({
+  timeline: [{
+    type: jsPsychSurveyMultiSelect,
+    questions: [{
+      prompt: "Какой языковой моделью (ИИ) вы пользуетесь? (можете выбрать как один, так и несколько)",
+      name: "ai_models",
+      options: ["Chat GPT", "Yandex GPT", "Deep Seek", "Copilot", "Gemini", "Qwen", "Другое"],
+      required: true,
+      horizontal: false
+    }],
+    data: { block: "ai" },
+    on_finish: function(data) {
+      const v = data.response.ai_models;
+      aiModelsOtherNeeded = Array.isArray(v) && v.includes("Другое");
+    }
   }],
   conditional_function: function() {
     return usesAI === "Да";
   }
 });
 
+timeline.push({
+  timeline: [{
+    type: jsPsychSurveyText,
+    questions: [{
+      prompt: "Вы выбрали «Другое». Укажите, пожалуйста, какую ещё модель ИИ вы используете:",
+      name: "ai_model_other",
+      required: true
+    }],
+    data: { block: "ai" }
+  }],
+  conditional_function: function() {
+    return usesAI === "Да" && aiModelsOtherNeeded;
+  }
+});
+
 // ==========================================
+// ЧАСТЬ 3. ПСИХОМЕТРИЧЕСКИЕ ОПРОСНИКИ
 // ==========================================
-// 4. КОПИНГ-СТРАТЕГИИ (25 пунктов, по одному на экран)
-// ==========================================
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Часть 2 из 4</div><h3>Тревога и депрессия</h3><p>В этом разделе находятся опросники настроения (PHQ-9) и тревожности (GAD-7). Здесь нет «правильных» и «неправильных» ответов — отвечайте искренне.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать",
+  on_load: function() { startPartTiming(2); updateStudyProgress(2, 0); }
+});
+
+// ------------------------------------------
+// 2а. PHQ-9 (настроение) + GAD-7 (тревожность)
+// ------------------------------------------
+const moodScale = ["Совсем нет", "Несколько дней", "Более чем в половине дней", "Почти каждый день"];
+
+timeline.push({
+  type: jsPsychInstructions,
+  pages: [
+    "<h3>Опросник настроения (PHQ-9)</h3>" +
+    "<p>Ниже приведён список вопросов о том, как вы себя чувствовали в течение <b>последних двух недель</b>. Для каждого пункта выберите вариант, наиболее точно описывающий вашу ситуацию.</p>" +
+    "<p style='color:#777; font-size:14px;'>Это стандартизированный скрининговый опросник, широко используемый в медицинской практике. Ваши ответы анонимны.</p>"
+  ],
+  show_clickable_nav: true,
+  button_label_next: "Начать блок"
+});
+
+const phq9Items = [
+  "Отсутствие интереса к происходящим событиям",
+  "Безразличие, подавленность",
+  "Проблемы с засыпанием, бессонница, либо наоборот — слишком долгий сон",
+  "Чувство усталости или упадок сил",
+  "Отсутствие аппетита или переедание",
+  "Ощущение себя неудачником, вина за то, что тяготите семью",
+  "Трудности с концентрацией внимания (чтение, просмотр телевизора)",
+  "Заторможенность в движениях/речи, либо наоборот — избыточная двигательная активность",
+  "Мысли о самоубийстве или причинении себе вреда"
+];
+
+phq9Items.forEach((item, index) => {
+  timeline.push({
+    type: jsPsychSurveyLikert,
+    questions: [{ prompt: `В последние две недели вас беспокоило: ${item}`, name: `phq9_${index + 1}`, labels: moodScale, required: true }],
+    data: { block: "phq9", item_id: index + 1 },
+  });
+
+  // После PHQ-9 проверяем пункт о суицидальных мыслях и общий балл.
+  // Экран помощи показывается только при срабатывании безопасного порога.
+  if (index === 8) {
+    timeline.push({
+      type: jsPsychHtmlButtonResponse,
+      stimulus: function() {
+        const answers = jsPsych.data.get().filter({block: "phq9"}).values();
+        const phqScore = answers.reduce((sum, row) => {
+          const key = "phq9_" + row.item_id;
+          const response = row.response;
+          const value = typeof response === "object" ? Number(response[key]) : Number(response);
+          return sum + (Number.isFinite(value) ? value : 0);
+        }, 0);
+        const suicidalItem = answers.find(row => Number(row.item_id) === 9);
+        const suicidalKey = suicidalItem ? "phq9_" + suicidalItem.item_id : null;
+        const suicidalScore = suicidalItem ? (typeof suicidalItem.response === "object" ? Number(suicidalItem.response[suicidalKey]) : Number(suicidalItem.response)) : 0;
+
+        if (suicidalScore > 0 || phqScore >= 10) {
+          return `<div class="crisis-overlay">
+            <div class="crisis-modal">
+              <h3>Внимание</h3>
+              <p>Ваши ответы указывают на возможное эмоциональное неблагополучие.</p>
+              <p>Если вы испытываете тяжёлые переживания или мысли о причинении себе вреда, пожалуйста, обратитесь за помощью:</p>
+              <p class="crisis-number">📞 +996 (312) 54-86-94 — Республиканский центр психиатрии и наркологии<br>
+              <span style="font-size:14px;font-weight:400;">круглосуточно, бесплатно</span></p>
+              <p><b>Вы не одни.</b> Обратиться за помощью — это нормально.</p>
+            </div>
+          </div>`;
+        }
+
+        return "<div style='text-align:left;'><h3>Продолжим</h3><p>Спасибо. Теперь перейдём к следующему блоку.</p></div>";
+      },
+      choices: ["Продолжить"],
+      data: { block: "phq9_safety_screen" },
+      conditional_function: function() {
+        const answers = jsPsych.data.get().filter({block: "phq9"}).values();
+        const phqScore = answers.reduce((sum, row) => {
+          const key = "phq9_" + row.item_id;
+          const value = typeof row.response === "object" ? Number(row.response[key]) : Number(row.response);
+          return sum + (Number.isFinite(value) ? value : 0);
+        }, 0);
+        const suicidalItem = answers.find(row => Number(row.item_id) === 9);
+        const suicidalKey = suicidalItem ? "phq9_" + suicidalItem.item_id : null;
+        const suicidalScore = suicidalItem ? (typeof suicidalItem.response === "object" ? Number(suicidalItem.response[suicidalKey]) : Number(suicidalItem.response)) : 0;
+        return suicidalScore > 0 || phqScore >= 10;
+      }
+    });
+  }
+});
+
+timeline.push({
+  type: jsPsychInstructions,
+  pages: [
+    "<h3>Опросник тревожности (GAD-7)</h3>" +
+    "<p>Так же, как и в предыдущем блоке, оцените, как часто за <b>последние две недели</b> вас беспокоило каждое из следующих состояний.</p>"
+  ],
+  show_clickable_nav: true,
+  button_label_next: "Начать блок"
+});
+
+const gad7Items = [
+  "Чувство тревоги или раздражения",
+  "Неспособность справиться со своим беспокойством",
+  "Чрезмерное беспокойство по разным поводам",
+  "Неспособность расслабиться",
+  "Ощущение беспокойства настолько сильное, что трудно усидеть на месте",
+  "Склонность быстро испытывать злость или раздражительность",
+  "Чувство страха, будто может случиться что-то ужасное"
+];
+
+gad7Items.forEach((item, index) => {
+  timeline.push({
+    type: jsPsychSurveyLikert,
+    questions: [{ prompt: `В последние две недели вас беспокоило: ${item}`, name: `gad7_${index + 1}`, labels: moodScale, required: true }],
+    data: { block: "gad7", item_id: index + 1 },
+  });
+});
+
+// ------------------------------------------
+// 3б. Копинг-стратегии (Приложение II)
+// ------------------------------------------
 const copingItems = [
   "Когда я сталкиваюсь с трудностями, я стараюсь понять, что именно произошло и почему.",
   "Я активно ищу решения проблемы.",
@@ -265,105 +944,389 @@ const copingItems = [
   "Я занимаюсь физической активностью или спортом, чтобы снять стресс."
 ];
 
-const likertLabels = ["Совсем не так", "Немного так", "В некоторой степени так", "Довольно часто так", "Почти всегда так"];
+// Официальная шкала из Приложения II (исправлено под оригинал: было "Довольно часто так"/"Почти всегда так")
+const likertLabels = ["Совсем не так", "Немного так", "В некоторой степени так", "В основном так", "Полностью так"];
 
 timeline.push({
   type: jsPsychInstructions,
-  pages: ["<p><b>Инструкция:</b> Этот опрос поможет понять, каким образом вы обычно справляетесь со стрессовыми ситуациями. Мы не оцениваем правильность или ошибочность ваших ответов — каждый человек уникален. Пожалуйста, прочтите каждое утверждение и отметьте, насколько часто или характерно для вас такое поведение в стрессовой ситуации. Отвечайте честно — так, как вы поступаете на самом деле.</p>"],
+  pages: [
+    "<div class='part-label'>Часть 3 из 4</div><h3>Опросник «Как я справляюсь со стрессом»</h3>" +
+    "<p>Уважаемый участник! Этот опрос поможет понять, каким образом вы обычно справляетесь со стрессовыми ситуациями. Мы не оцениваем правильность или ошибочность ваших ответов — каждый человек уникален и выбирает свои способы совладания с трудностями.</p>" +
+    "<p>Пожалуйста, прочтите каждое утверждение и отметьте, насколько часто или характерно для вас такое поведение в стрессовой ситуации. Отвечайте честно — так, как вы поступаете на самом деле, а не как «следовало бы».</p>" +
+    "<p>Ваши ответы не будут использоваться для оценки личности и останутся полностью анонимными.</p>" +
+    "<p><b>Важно!</b> Этот тест не является экзаменом и не требует специальных знаний. Здесь не может быть «хороших» или «плохих» ответов — важно только ваше мнение. Вы можете делать паузы при необходимости. Пожалуйста, читайте задания внимательно, но не слишком долго — чаще всего верный ответ приходит первым.</p>"
+  ],
   show_clickable_nav: true,
-  button_label_next: "Начать"
+  button_label_next: "Начать",
+  on_load: function() { startPartTiming(3); updateStudyProgress(3, 0); }
 });
 
-copingItems.forEach((item, index) => {
+for (let i = 0; i < 13; i++) {
   timeline.push({
     type: jsPsychSurveyLikert,
-    questions: [{ prompt: item, name: `coping_${index + 1}`, labels: likertLabels }],
-    data: { block: "coping", item_id: index + 1 },
+    questions: [{
+      prompt: copingItems[i],
+      name: `coping_${i + 1}`,
+      labels: likertLabels,
+      required: true
+    }],
+    data: { block: "coping", item_id: i + 1 }
   });
+}
+
+// Контрольный вопрос на внимательность (attention check) — замаскирован под обычный
+// пункт шкалы, тот же визуальный формат, что и остальные. Не учитывается в баллах
+// копинга, нужен только чтобы отследить, читают ли респонденты текст или кликают
+// автоматически. Правильный ответ — "В некоторой степени так" (индекс 2).
+timeline.push({
+  type: jsPsychSurveyLikert,
+  questions: [{
+    prompt: "Это контрольный вопрос — чтобы показать, что вы внимательно читаете текст, выберите вариант «В некоторой степени так».",
+    name: "attention_check_1",
+    labels: likertLabels,
+    required: true
+  }],
+  data: { block: "attention_check", correct_index: 2 },
+  on_finish: function(data) {
+    data.attention_check_passed = (data.response.attention_check_1 === 2);
+  }
 });
 
-// ==========================================
-// 5. КРИТИЧЕСКОЕ МЫШЛЕНИЕ (5 блоков)
-// ==========================================
-function makeCTItem(blockName, itemId, text, options, correctIndex = null) {
+for (let i = 13; i < copingItems.length; i++) {
+  timeline.push({
+    type: jsPsychSurveyLikert,
+    questions: [{
+      prompt: copingItems[i],
+      name: `coping_${i + 1}`,
+      labels: likertLabels,
+      required: true
+    }],
+    data: { block: "coping", item_id: i + 1 }
+  });
+}
+
+// ------------------------------------------
+// 3в. Критическое мышление (Приложение I, адаптированная WGCTA)
+// ------------------------------------------
+// Система баллов — по официальному ключу Приложения I:
+// 5-вариантные задания (Inference, Assumptions, Interpretation): 3/2/1/0 баллов
+//   в зависимости от "расстояния" выбранного ответа до правильного по шкале A-E.
+// Бинарные задания (Deduction, Evaluation of Arguments): 3 балла за верный ответ, 0 за неверный.
+// Максимум: 25 заданий × 3 балла = 75 баллов (совпадает с официальной интерпретационной таблицей).
+function makeCTItem(blockName, itemId, text, options, correctIndex) {
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: `<div class="block-label">${blockName} · Задание ${itemId}</div><div style="text-align: left; margin-bottom: 20px;">${text}</div>`,
     choices: options,
     data: { block: blockName, item_id: itemId, correct_index: correctIndex },
     on_finish: function(data) {
-      if (correctIndex !== null) {
-        data.correct = (data.response === correctIndex);
+      data.correct = (data.response === correctIndex);
+      if (options.length === 2) {
+        data.score = (data.response === correctIndex) ? 3 : 0;
+      } else {
+        const distance = Math.abs(data.response - correctIndex);
+        data.score = Math.max(0, 3 - distance);
       }
     }
   };
 }
 
+timeline.push({
+  type: jsPsychInstructions,
+  pages: [
+    "<div class='part-label'>Часть 4 из 4</div><h3>Диагностический опросник критического мышления</h3>" +
+    "<p>Перед вами диагностический опросник, предназначенный для оценки уровня критического мышления. Тест состоит из 25 заданий, разделённых на пять категорий: умение делать выводы, выявлять предпосылки, логически рассуждать, интерпретировать информацию и оценивать силу аргументов.</p>" +
+    "<p>Для каждого задания выберите один из предложенных вариантов ответа, который лучше всего отражает вашу точку зрения, опираясь на приведённую информацию.</p>" +
+    "<p><b>Важно!</b> Этот тест не является экзаменом и не требует специальных знаний. Здесь не может быть «хороших» или «плохих» ответов — важно только ваше мнение и способ рассуждения. Вы можете делать паузы при необходимости. Пожалуйста, читайте задания внимательно, но не слишком долго — чаще всего верный ответ приходит первым.</p>" +
+    "<p style='color:#777; font-size:14px;'>На выполнение теста обычно уходит 25–30 минут.</p>"
+  ],
+  show_clickable_nav: true,
+  button_label_next: "Далее",
+  on_load: function() { startPartTiming(4); updateStudyProgress(4, 0); }
+});
+
+// --- Блок 1: Умение делать выводы (Inference) ---
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Ознакомительный пример</div><h3>Умение делать выводы</h3><p>Пример: «Из 100 студентов 80 сообщили, что пользуются библиотекой. Утверждение: большинство студентов пользуются библиотекой».</p><p style='color:#777;font-size:14px;'>Этот пример не входит в результат и его время не учитывается в аналитическом времени.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "К примеру",
+  data: { block: "training", timing_exclude: true }
+});
+timeline.push({
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<h3>Ознакомительный пример</h3><p style='text-align:left;'>Пример: «Из 100 студентов 80 сообщили, что пользуются библиотекой. Утверждение: большинство студентов пользуются библиотекой».</p>",
+  choices: ["Несомненно истинно", "Вероятно истинно", "Недостаточно данных", "Вероятно ложно", "Несомненно ложно"],
+  data: { block: "training", timing_exclude: true },
+  on_finish: function(data) {
+    data.correct = (data.response === 0);
+  }
+});
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<h3>Пояснение</h3><p style='text-align:left;'>Из приведённых данных следует, что 80 из 100 — это большинство. Поэтому утверждение несомненно истинно.</p><p style='color:#777;font-size:14px;'>Теперь начнётся основной блок. Ответы ниже учитываются в исследовании.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать блок",
+  data: { block: "training", timing_exclude: true }
+});
+
 const block1Options = ["Несомненно истинно", "Вероятно истинно", "Недостаточно данных", "Вероятно ложно", "Несомненно ложно"];
 timeline.push({ type: jsPsychInstructions, pages: ["<h3>Блок 1: Умение делать выводы (Inference)</h3><p>Прочитайте текст и оцените утверждение, основываясь на приведённой информации.</p>"], show_clickable_nav: true, button_label_next: "Начать блок" });
-timeline.push(makeCTItem("Умение делать выводы", "1.1", "<b>Текст:</b> На групповом занятии один из участников сказал: «Я доверяю своим чувствам больше, чем фактам. Иногда просто 'чувствую', что решение правильное».<br><br><b>Утверждение:</b> Этот участник всегда делает верные выводы.", block1Options));
-timeline.push(makeCTItem("Умение делать выводы", "1.2", "<b>Текст:</b> Из 30 опрошенных человек, 25 сообщили, что испытывают усталость после общения в соцсетях.<br><br><b>Утверждение:</b> Использование соцсетей вызывает усталость у большинства людей.", block1Options));
-timeline.push(makeCTItem("Умение делать выводы", "1.3", "<b>Текст:</b> На собрании врач сказал: «Пациенты часто не выполняют рекомендации, если не понимают их».<br><br><b>Утверждение:</b> Информирование пациента повышает степень понимания и взаимодействия между пациентом и врачом.", block1Options));
-timeline.push(makeCTItem("Умение делать выводы", "1.4", "<b>Текст:</b> Человек ежедневно пользуется навигатором и утверждает, что у него хорошая пространственная ориентация.<br><br><b>Утверждение:</b> Пользование навигатором развивает пространственное мышление.", block1Options));
-timeline.push(makeCTItem("Умение делать выводы", "1.5", "<b>Текст:</b> Из 100 человек 97 сообщили, что чувствовали тревогу при выступлении на публике.<br><br><b>Утверждение:</b> Большинство людей испытывают тревогу при публичных выступлениях.", block1Options));
+timeline.push(makeCTItem("Умение делать выводы", "1.1", "<b>Текст:</b> На групповом занятии один из участников сказал: «Я доверяю своим чувствам больше, чем фактам. Иногда просто 'чувствую', что решение правильное».<br><br><b>Утверждение:</b> Этот участник всегда делает верные выводы.", block1Options, 2));
+timeline.push(makeCTItem("Умение делать выводы", "1.2", "<b>Текст:</b> Из 30 опрошенных человек, 25 сообщили, что испытывают усталость после общения в соцсетях.<br><br><b>Утверждение:</b> Использование соцсетей вызывает усталость у большинства людей.", block1Options, 2));
+timeline.push(makeCTItem("Умение делать выводы", "1.3", "<b>Текст:</b> На собрании врач сказал: «Пациенты часто не выполняют рекомендации, если не понимают их».<br><br><b>Утверждение:</b> Информирование пациента повышает степень понимания и взаимодействия между пациентом и врачом.", block1Options, 1));
+timeline.push(makeCTItem("Умение делать выводы", "1.4", "<b>Текст:</b> Человек ежедневно пользуется навигатором и утверждает, что у него хорошая пространственная ориентация.<br><br><b>Утверждение:</b> Пользование навигатором развивает пространственное мышление.", block1Options, 2));
+timeline.push(makeCTItem("Умение делать выводы", "1.5", "<b>Текст:</b> Из 100 человек 97 сообщили, что чувствовали тревогу при выступлении на публике.<br><br><b>Утверждение:</b> Большинство людей испытывают тревогу при публичных выступлениях.", block1Options, 0));
+
+// --- Блок 2: Выявление предпосылок (Recognition of Assumptions) ---
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Ознакомительный пример</div><h3>Выявление предпосылок</h3><p>Пример: «Чтобы хорошо подготовиться к экзамену, студент должен регулярно заниматься». Какая мысль является скрытой предпосылкой?</p><p style='color:#777;font-size:14px;'>Этот пример не входит в результат и его время не учитывается в аналитическом времени.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "К примеру",
+  data: { block: "training", timing_exclude: true }
+});
+timeline.push({
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<h3>Ознакомительный пример</h3><p style='text-align:left;'>Пример: «Чтобы хорошо подготовиться к экзамену, студент должен регулярно заниматься». Какая мысль является скрытой предпосылкой?</p>",
+  choices: ["Регулярные занятия связаны с подготовкой", "Все студенты учатся одинаково", "Экзамен всегда сложный", "Подготовка невозможна без преподавателя", "Студент обязан учиться каждый день"],
+  data: { block: "training", timing_exclude: true },
+  on_finish: function(data) {
+    data.correct = (data.response === 0);
+  }
+});
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<h3>Пояснение</h3><p style='text-align:left;'>Предполагается, что регулярные занятия действительно связаны с подготовкой к экзамену.</p><p style='color:#777;font-size:14px;'>Теперь начнётся основной блок. Ответы ниже учитываются в исследовании.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать блок",
+  data: { block: "training", timing_exclude: true }
+});
 
 timeline.push({ type: jsPsychInstructions, pages: ["<h3>Блок 2: Выявление предпосылок (Recognition of Assumptions)</h3><p>Определите скрытую предпосылку (неявное предположение) в приведённом утверждении.</p>"], show_clickable_nav: true, button_label_next: "Начать блок" });
-timeline.push(makeCTItem("Выявление предпосылок", "2.1", "<b>Утверждение:</b> «Если человек не умеет фильтровать информацию, он не способен мыслить критически».", ["Человеку обязательно нужен фильтр", "Критическое мышление связано с вниманием", "Умение фильтровать — основа КМ", "Вся информация вредна", "Фильтрация информации и КМ — синонимы"]));
-timeline.push(makeCTItem("Выявление предпосылок", "2.2", "<b>Утверждение:</b> «Использование языковых моделей снижает когнитивную нагрузку, а значит — и нагрузку на личную ответственность».", ["Когнитивная нагрузка всегда связана с ответственностью", "ИИ делает людей безответственными", "Ответственность и мышление — одно и то же", "Использование ИИ влияет на поведение", "Люди не умеют использовать ИИ правильно"]));
-timeline.push(makeCTItem("Выявление предпосылок", "2.3", "<b>Утверждение:</b> «Человек, не способный видеть различия между своими чувствами и фактами, не может быть объективным».", ["Эмоции всегда мешают", "Объективность требует отделения чувств от фактов", "Никто не может быть полностью объективным", "Факты зависят от восприятия", "Только логика важна"]));
-timeline.push(makeCTItem("Выявление предпосылок", "2.4", "<b>Утверждение:</b> «Если студент не пользуется ИИ, он учится лучше».", ["Все студенты используют ИИ одинаково", "ИИ снижает качество обучения", "Качество обучения зависит от инструментов", "Учёба без ИИ — более осознанна", "Все студенты учатся одинаково"]));
-timeline.push(makeCTItem("Выявление предпосылок", "2.5", "<b>Утверждение:</b> «Человек не может быть рациональным, если он эмоционально нестабилен».", ["Эмоции мешают рациональности", "Рациональность и эмоциональность несовместимы", "Эмоциональная нестабильность исключает разум", "Только логика даёт рациональность", "Умные люди контролируют эмоции"]));
+timeline.push(makeCTItem("Выявление предпосылок", "2.1", "<b>Утверждение:</b> «Если человек не умеет фильтровать информацию, он не способен мыслить критически».", ["Человеку обязательно нужен фильтр", "Критическое мышление связано с вниманием", "Умение фильтровать — основа КМ", "Вся информация вредна", "Фильтрация информации и КМ — синонимы"], 2));
+timeline.push(makeCTItem("Выявление предпосылок", "2.2", "<b>Утверждение:</b> «Использование языковых моделей снижает когнитивную нагрузку, а значит — и нагрузку на личную ответственность».", ["Когнитивная нагрузка всегда связана с ответственностью", "ИИ делает людей безответственными", "Ответственность и мышление — одно и то же", "Использование ИИ влияет на поведение", "Люди не умеют использовать ИИ правильно"], 3));
+timeline.push(makeCTItem("Выявление предпосылок", "2.3", "<b>Утверждение:</b> «Человек, не способный видеть различия между своими чувствами и фактами, не может быть объективным».", ["Эмоции всегда мешают", "Объективность требует отделения чувств от фактов", "Никто не может быть полностью объективным", "Факты зависят от восприятия", "Только логика важна"], 1));
+timeline.push(makeCTItem("Выявление предпосылок", "2.4", "<b>Утверждение:</b> «Если студент не пользуется ИИ, он учится лучше».", ["Все студенты используют ИИ одинаково", "ИИ снижает качество обучения", "Качество обучения зависит от инструментов", "Учёба без ИИ — более осознанна", "Все студенты учатся одинаково"], 1));
+timeline.push(makeCTItem("Выявление предпосылок", "2.5", "<b>Утверждение:</b> «Человек не может быть рациональным, если он эмоционально нестабилен».", ["Эмоции мешают рациональности", "Рациональность и эмоциональность несовместимы", "Эмоциональная нестабильность исключает разум", "Только логика даёт рациональность", "Умные люди контролируют эмоции"], 0));
+
+// --- Блок 3: Дедукция (Deduction) ---
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Ознакомительный пример</div><h3>Дедукция</h3><p>Пример: 1) Все млекопитающие дышат лёгкими. 2) Кит — млекопитающее. Вывод: кит дышит лёгкими.</p><p style='color:#777;font-size:14px;'>Этот пример не входит в результат и его время не учитывается в аналитическом времени.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "К примеру",
+  data: { block: "training", timing_exclude: true }
+});
+timeline.push({
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<h3>Ознакомительный пример</h3><p style='text-align:left;'>Пример: 1) Все млекопитающие дышат лёгкими. 2) Кит — млекопитающее. Вывод: кит дышит лёгкими.</p>",
+  choices: ["Следует логически", "Не следует логически"],
+  data: { block: "training", timing_exclude: true },
+  on_finish: function(data) {
+    data.correct = (data.response === 0);
+  }
+});
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<h3>Пояснение</h3><p style='text-align:left;'>Если оба исходных утверждения истинны, вывод следует логически.</p><p style='color:#777;font-size:14px;'>Теперь начнётся основной блок. Ответы ниже учитываются в исследовании.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать блок",
+  data: { block: "training", timing_exclude: true }
+});
 
 const block3Options = ["Следует логически", "Не следует логически"];
 timeline.push({ type: jsPsychInstructions, pages: ["<h3>Блок 3: Дедукция (Deduction)</h3><p>Определите, следует ли логически вывод из данных утверждений.</p>"], show_clickable_nav: true, button_label_next: "Начать блок" });
-timeline.push(makeCTItem("Дедукция", "3.1", "<b>Утверждения:</b><br>1) Все адаптивные копинг-стратегии включают осознанную переработку информации.<br>2) Некоторые пациенты не перерабатывают информацию осознанно.<br><br><b>Вывод:</b> Некоторые пациенты не используют адаптивные копинг-стратегии.", block3Options));
-timeline.push(makeCTItem("Дедукция", "3.2", "<b>Утверждения:</b><br>1) Некоторые люди, испытывающие стресс, склонны к проекции.<br>2) Все проективные механизмы снижают психическое напряжение.<br><br><b>Вывод:</b> Некоторые люди снижают напряжение с помощью проекции.", block3Options));
-timeline.push(makeCTItem("Дедукция", "3.3", "<b>Утверждения:</b><br>1) Все студенты изучают медицину.<br>2) Некоторые студенты не используют ИИ.<br><br><b>Вывод:</b> Некоторые студенты, не использующие ИИ, изучают медицину.", block3Options));
-timeline.push(makeCTItem("Дедукция", "3.4", "<b>Постулаты:</b><br>1) Все формы магического мышления основаны на искажённой причинности.<br>2) Некоторые пациенты демонстрируют магическое мышление.<br><br><b>Вывод:</b> Некоторые пациенты используют искажённую причинность.", block3Options));
-timeline.push(makeCTItem("Дедукция", "3.5", "<b>Постулаты:</b><br>1) Никто из студентов 5 курса не проходил психиатрию.<br>2) Все студенты 5 курса — клиницисты.<br><br><b>Вывод:</b> Некоторые клиницисты не проходили психиатрию.", block3Options));
+timeline.push(makeCTItem("Дедукция", "3.1", "<b>Утверждения:</b><br>1) Все адаптивные копинг-стратегии включают осознанную переработку информации.<br>2) Некоторые пациенты не перерабатывают информацию осознанно.<br><br><b>Вывод:</b> Некоторые пациенты не используют адаптивные копинг-стратегии.", block3Options, 0));
+timeline.push(makeCTItem("Дедукция", "3.2", "<b>Утверждения:</b><br>1) Некоторые люди, испытывающие стресс, склонны к проекции.<br>2) Все проективные механизмы снижают психическое напряжение.<br><br><b>Вывод:</b> Некоторые люди снижают напряжение с помощью проекции.", block3Options, 0));
+timeline.push(makeCTItem("Дедукция", "3.3", "<b>Утверждения:</b><br>1) Все студенты изучают медицину.<br>2) Некоторые студенты не используют ИИ.<br><br><b>Вывод:</b> Некоторые студенты, не использующие ИИ, изучают медицину.", block3Options, 0));
+timeline.push(makeCTItem("Дедукция", "3.4", "<b>Постулаты:</b><br>1) Все формы магического мышления основаны на искажённой причинности.<br>2) Некоторые пациенты демонстрируют магическое мышление.<br><br><b>Вывод:</b> Некоторые пациенты используют искажённую причинность.", block3Options, 0));
+timeline.push(makeCTItem("Дедукция", "3.5", "<b>Постулаты:</b><br>1) Никто из студентов 5 курса не проходил психиатрию.<br>2) Все студенты 5 курса — клиницисты.<br><br><b>Вывод:</b> Некоторые клиницисты не проходили психиатрию.", block3Options, 0));
+
+// --- Блок 4: Интерпретация (Interpretation) ---
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Ознакомительный пример</div><h3>Интерпретация</h3><p>Пример: Из 20 студентов 15 предпочитают очные занятия. Утверждение: большинство опрошенных предпочитает очные занятия.</p><p style='color:#777;font-size:14px;'>Этот пример не входит в результат и его время не учитывается в аналитическом времени.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "К примеру",
+  data: { block: "training", timing_exclude: true }
+});
+timeline.push({
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<h3>Ознакомительный пример</h3><p style='text-align:left;'>Пример: Из 20 студентов 15 предпочитают очные занятия. Утверждение: большинство опрошенных предпочитает очные занятия.</p>",
+  choices: ["Несомненно истинно", "Вероятно истинно", "Недостаточно данных", "Вероятно ложно", "Несомненно ложно"],
+  data: { block: "training", timing_exclude: true },
+  on_finish: function(data) {
+    data.correct = (data.response === 0);
+  }
+});
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<h3>Пояснение</h3><p style='text-align:left;'>15 из 20 — это большинство опрошенных, поэтому утверждение следует непосредственно из данных.</p><p style='color:#777;font-size:14px;'>Теперь начнётся основной блок. Ответы ниже учитываются в исследовании.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать блок",
+  data: { block: "training", timing_exclude: true }
+});
 
 const block4Options = ["Несомненно истинно", "Вероятно истинно", "Недостаточно данных", "Вероятно ложно", "Несомненно ложно"];
 timeline.push({ type: jsPsychInstructions, pages: ["<h3>Блок 4: Интерпретация информации (Interpretation)</h3><p>Прочитайте текст и оцените предложенное утверждение.</p>"], show_clickable_nav: true, button_label_next: "Начать блок" });
-timeline.push(makeCTItem("Интерпретация", "4.1", "<b>Текст:</b> Пациент говорит: «Мне кажется, что все сотрудники относятся ко мне холодно. Они не улыбаются и стараются быстро закончить разговор».<br><br><b>Утверждение:</b> Сотрудники проявляют к пациенту враждебность.", block4Options));
-timeline.push(makeCTItem("Интерпретация", "4.2", "<b>Текст:</b> Из 40 студентов 22 заявили, что ИИ делает их учебу эффективнее, 18 — что не замечают изменений.<br><br><b>Утверждение:</b> Более половины студентов замечают улучшение от ИИ.", block4Options));
-timeline.push(makeCTItem("Интерпретация", "4.3", "<b>Текст:</b> Пациент с расстройством адаптации избегает разговора о работе и говорит, что «не видит смысла».<br><br><b>Утверждение:</b> Избегание работы — один из симптомов расстройства адаптации.", block4Options));
-timeline.push(makeCTItem("Интерпретация", "4.4", "<b>Текст:</b> Пациент говорит: «Когда я слышу голоса, они чаще всего говорят что-то плохое».<br><br><b>Утверждение:</b> Галлюцинации пациента носили преимущественно негативный характер.", block4Options));
-timeline.push(makeCTItem("Интерпретация", "4.5", "<b>Текст:</b> На вопрос о причинах своей тревожности пациент сказал: «Мне просто плохо, но я не знаю почему».<br><br><b>Утверждение:</b> У пациента отсутствует осознание причин тревоги.", block4Options));
+timeline.push(makeCTItem("Интерпретация", "4.1", "<b>Текст:</b> Пациент говорит: «Мне кажется, что все сотрудники относятся ко мне холодно. Они не улыбаются и стараются быстро закончить разговор».<br><br><b>Утверждение:</b> Сотрудники проявляют к пациенту враждебность.", block4Options, 2));
+timeline.push(makeCTItem("Интерпретация", "4.2", "<b>Текст:</b> Из 40 студентов 22 заявили, что ИИ делает их учебу эффективнее, 18 — что не замечают изменений.<br><br><b>Утверждение:</b> Более половины студентов замечают улучшение от ИИ.", block4Options, 0));
+timeline.push(makeCTItem("Интерпретация", "4.3", "<b>Текст:</b> Пациент с расстройством адаптации избегает разговора о работе и говорит, что «не видит смысла».<br><br><b>Утверждение:</b> Избегание работы — один из симптомов расстройства адаптации.", block4Options, 0));
+timeline.push(makeCTItem("Интерпретация", "4.4", "<b>Текст:</b> Пациент говорит: «Когда я слышу голоса, они чаще всего говорят что-то плохое».<br><br><b>Утверждение:</b> Галлюцинации пациента носили преимущественно негативный характер.", block4Options, 0));
+timeline.push(makeCTItem("Интерпретация", "4.5", "<b>Текст:</b> На вопрос о причинах своей тревожности пациент сказал: «Мне просто плохо, но я не знаю почему».<br><br><b>Утверждение:</b> У пациента отсутствует осознание причин тревоги.", block4Options, 0));
+
+// --- Блок 5: Оценка аргументов (Evaluation of Arguments) ---
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<div class='part-label'>Ознакомительный пример</div><h3>Оценка аргументов</h3><p>Пример: «Следует увеличить число практических занятий, потому что практика позволяет студентам чаще применять полученные знания». Оцените силу аргумента.</p><p style='color:#777;font-size:14px;'>Этот пример не входит в результат и его время не учитывается в аналитическом времени.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "К примеру",
+  data: { block: "training", timing_exclude: true }
+});
+timeline.push({
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<h3>Ознакомительный пример</h3><p style='text-align:left;'>Пример: «Следует увеличить число практических занятий, потому что практика позволяет студентам чаще применять полученные знания». Оцените силу аргумента.</p>",
+  choices: ["Сильный", "Слабый"],
+  data: { block: "training", timing_exclude: true },
+  on_finish: function(data) {
+    data.correct = (data.response === 0);
+  }
+});
+timeline.push({
+  type: jsPsychInstructions,
+  pages: ["<h3>Пояснение</h3><p style='text-align:left;'>Аргумент содержит прямую связь между предлагаемым действием и его предполагаемой пользой.</p><p style='color:#777;font-size:14px;'>Теперь начнётся основной блок. Ответы ниже учитываются в исследовании.</p>"],
+  show_clickable_nav: true,
+  button_label_next: "Начать блок",
+  data: { block: "training", timing_exclude: true }
+});
 
 const block5Options = ["Сильный", "Слабый"];
 timeline.push({ type: jsPsychInstructions, pages: ["<h3>Блок 5: Оценка аргументов (Evaluation of Arguments)</h3><p>Оцените логическую силу приведённого аргумента.</p>"], show_clickable_nav: true, button_label_next: "Начать блок" });
-timeline.push(makeCTItem("Оценка аргументов", "5.1", "<b>Аргумент:</b> «Студент, который не умеет формулировать вопросы, не способен к критическому мышлению».", block5Options));
-timeline.push(makeCTItem("Оценка аргументов", "5.2", "<b>Аргумент:</b> «ИИ надо запретить, потому что он снижает активность мозга».", block5Options));
-timeline.push(makeCTItem("Оценка аргументов", "5.3", "<b>Аргумент:</b> «Нельзя считать человека умным, если он верит в магию».", block5Options));
-timeline.push(makeCTItem("Оценка аргументов", "5.4", "<b>Аргумент:</b> «Критическое мышление нужно только учёным, обычным людям оно мешает жить спокойно».", block5Options));
-timeline.push(makeCTItem("Оценка аргументов", "5.5", "<b>Аргумент:</b> «Если я не понимаю инструкцию, значит она плохая».", block5Options));
+timeline.push(makeCTItem("Оценка аргументов", "5.1", "<b>Аргумент:</b> «Студент, который не умеет формулировать вопросы, не способен к критическому мышлению».", block5Options, 0));
+timeline.push(makeCTItem("Оценка аргументов", "5.2", "<b>Аргумент:</b> «ИИ надо запретить, потому что он снижает активность мозга».", block5Options, 1));
+timeline.push(makeCTItem("Оценка аргументов", "5.3", "<b>Аргумент:</b> «Нельзя считать человека умным, если он верит в магию».", block5Options, 1));
+timeline.push(makeCTItem("Оценка аргументов", "5.4", "<b>Аргумент:</b> «Критическое мышление нужно только учёным, обычным людям оно мешает жить спокойно».", block5Options, 1));
+timeline.push(makeCTItem("Оценка аргументов", "5.5", "<b>Аргумент:</b> «Если я не понимаю инструкцию, значит она плохая».", block5Options, 1));
 
 // ==========================================
-// 6. ОТПРАВКА НА DATAPIPE → OSF
+// ОТПРАВКА НА DATAPIPE → OSF
 // ==========================================
+// Итоговые расчёты (баллы PHQ-9/GAD-7, тайминги) переехали внутрь on_start —
+// раньше они считались в момент чтения скрипта (до jsPsych.run()), когда
+// данных ещё физически не существовало, поэтому всегда получались нули.
 timeline.push({
   type: jsPsychPipe,
   action: "save",
   experiment_id: "NUuDiPtIw9j6",
   filename: `${participantID}.csv`,
-  data_string: () => jsPsych.data.get().csv(),
+  data_string: () => {
+    closePartTiming(4);
+    const scoreSummary = calculatePsychometricScores();
+    const summary = timingSummaryProperties();
+    jsPsych.data.addProperties({ ...scoreSummary, ...summary });
+    return '\uFEFF' + jsPsych.data.get().csv();
+  },
+  on_start: function() {
+    const overlay = document.createElement("div");
+    overlay.id = "datapipe-loader-overlay";
+    overlay.innerHTML = `
+      <div id="datapipe-loader-ring">
+        <span id="datapipe-loader-percent">0%</span>
+      </div>
+      <div id="datapipe-loader-text">Сохраняем ваши ответы…</div>`;
+    document.body.appendChild(overlay);
+
+    const ring = document.getElementById("datapipe-loader-ring");
+    const pctLabel = document.getElementById("datapipe-loader-percent");
+    let pct = 0;
+    // Имитация прогресса: быстро набирает до ~90%, дальше почти останавливается —
+    // реальный сетевой прогресс fetch() в браузере недоступен, поэтому это
+    // визуальная имитация ожидания, а не точный процент переданных байт.
+    window.__datapipeLoaderTimer = setInterval(() => {
+      const step = pct < 60 ? 4 : pct < 85 ? 1.2 : 0.2;
+      pct = Math.min(93, pct + step);
+      ring.style.background = `conic-gradient(#5746e3 ${pct * 3.6}deg, #ececf3 0deg)`;
+      pctLabel.textContent = Math.round(pct) + "%";
+    }, 150);
+  },
+  on_finish: function() {
+    clearInterval(window.__datapipeLoaderTimer);
+    const ring = document.getElementById("datapipe-loader-ring");
+    const pctLabel = document.getElementById("datapipe-loader-percent");
+    if (ring) ring.style.background = "conic-gradient(#5746e3 360deg, #ececf3 0deg)";
+    if (pctLabel) pctLabel.textContent = "100%";
+    setTimeout(() => {
+      const overlay = document.getElementById("datapipe-loader-overlay");
+      if (overlay) overlay.remove();
+    }, 300);
+  },
 });
 
 // ==========================================
-// 7. ЗАВЕРШЕНИЕ
+// ЗАВЕРШЕНИЕ (дебрифинг)
 // ==========================================
 timeline.push({
   type: jsPsychInstructions,
   pages: [
     function() {
-      return "<h3>Исследование завершено</h3>" +
-        "<p>Спасибо за участие! Ваши ответы сохранены.</p>" +
+      return "<h3>Исследование завершено 🎉</h3>" +
+        "<p>Спасибо за участие! Ваши ответы успешно сохранены.</p>" +
         "<p>Ваш идентификатор участника (сохраните его, если захотите отозвать согласие на использование данных):</p>" +
-        "<p style='font-size:22px; font-weight:bold; letter-spacing:1px; color:#5746e3;'>" + participantID + "</p>";
-    }
+        `<div style="display:flex; align-items:center; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0;">
+          <span id="participant-id-span" style='font-size:22px; font-weight:bold; letter-spacing:1px; color:#5746e3;'>${participantID}</span>
+          <button id="copy-id-btn" class="jspsych-btn" type="button">Скопировать</button>
+        </div>` +
+        "<p style='color:#777; font-size:14px;'>Нажмите «Далее», чтобы узнать больше об исследовании.</p>";
+    },
+    "<h3>О чём было это исследование?</h3>" +
+    "<p>Вы прошли анкетирование, направленное на изучение связи между <b>критическим мышлением</b>, <b>стратегиями совладания со стрессом (копинг-стратегиями)</b> и <b>опытом использования искусственного интеллекта</b>, с учётом уровня настроения и тревожности.</p>" +
+    "<p><i>Полные результаты исследования будут доступны после завершения набора данных. Обратите внимание: мы не сообщаем «правильные ответы» на задания сейчас, чтобы не повлиять на будущих участников.</i></p>",
+    "<h3>Вопросы и контакты</h3>" +
+    "<p>Если у вас возникли вопросы об исследовании или вы хотите отозвать свои данные, свяжитесь с нами:</p>" +
+    "<p>📧 email@example.com<br>🔬 Руководитель исследования: [ФИО]</p>" +
+    "<p>Ещё раз спасибо за ваш вклад в науку!</p>"
   ],
   show_clickable_nav: true,
-  button_label_next: "Завершить"
+  button_label_next: "Далее",
+  button_label_previous: "Назад",
+  on_load: function() {
+    const btn = document.getElementById("copy-id-btn");
+    if (!btn) return;
+    btn.addEventListener("click", function() {
+      const text = participantID;
+      const showResult = (ok) => {
+        btn.textContent = ok ? "Скопировано ✓" : "Не удалось скопировать";
+        setTimeout(() => { btn.textContent = "Скопировать"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showResult(true)).catch(() => legacyCopy());
+      } else {
+        legacyCopy();
+      }
+      function legacyCopy() {
+        try {
+          const tmp = document.createElement("textarea");
+          tmp.value = text;
+          tmp.style.position = "fixed";
+          tmp.style.opacity = "0";
+          document.body.appendChild(tmp);
+          tmp.focus();
+          tmp.select();
+          const ok = document.execCommand("copy");
+          document.body.removeChild(tmp);
+          showResult(ok);
+        } catch (e) {
+          showResult(false);
+        }
+      }
+    });
+  },
+  on_load: function() {
+    studyProgress.completed = true;
+    const bar = document.getElementById("study-progress");
+    if (bar) bar.style.display = "none";
+  }
 });
 
 jsPsych.run(timeline);
